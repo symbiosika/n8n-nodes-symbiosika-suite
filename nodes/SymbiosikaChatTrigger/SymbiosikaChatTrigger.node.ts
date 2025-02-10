@@ -20,7 +20,7 @@ export class SymbiosikaChatTrigger implements INodeType {
 			name: 'Symbiosika Chat Trigger',
 		},
 		inputs: [],
-		outputs: ['main'],
+		outputs: ['main'] as any,
 		credentials: [
 			{
 				name: 'symbiosikaChatApi',
