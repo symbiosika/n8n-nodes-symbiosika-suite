@@ -1,0 +1,27 @@
+# Docker environment for n8n testing and development
+
+version: "3.7"
+
+# linux:
+# extra_hosts:
+#   - "host.docker.internal:host-gateway"
+
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    restart: always
+    ports:
+      - "127.0.0.1:5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - NODE_ENV=production
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=Europe/Berlin
+    volumes:
+      # - n8n_data:/home/node/.n8n
+      - ./dist:/home/node/.n8n/custom/node_modules/n8n-nodes-symbiosika-suite
+
+# volumes:
+#   n8n_data
