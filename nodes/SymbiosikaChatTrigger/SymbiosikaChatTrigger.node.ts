@@ -37,7 +37,7 @@ export class SymbiosikaChatTrigger implements INodeType {
 		],
 		properties: [
 			{
-				displayName: 'Webhook Name',
+				displayName: 'Name to display in Symbiosika',
 				name: 'webhookName',
 				type: 'string',
 				default: '',
@@ -58,6 +58,13 @@ export class SymbiosikaChatTrigger implements INodeType {
 				default: 'chatOutput',
 				required: true,
 			},
+			{
+				displayName: 'Use Organisation-wide?',
+				name: 'organisationWide',
+				type: 'boolean',
+				default: false,
+				description: 'Whether the webhook applies to the entire organisation',
+			},
 		],
 	};
 
@@ -71,7 +78,7 @@ export class SymbiosikaChatTrigger implements INodeType {
 				const credentials = await this.getCredentials('symbiosikaChatApi');
 
 				try {
-					const endpoint = `${credentials.apiUrl}/api/v1/webhooks/check`;
+					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/webhooks/check`;
 					const response = await this.helpers.request({
 						method: 'POST',
 						uri: endpoint,
@@ -102,7 +109,7 @@ export class SymbiosikaChatTrigger implements INodeType {
 				const credentials = await this.getCredentials('symbiosikaChatApi');
 
 				try {
-					const endpoint = `${credentials.apiUrl}/api/v1/webhooks/register/n8n`;
+					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/webhooks/register/n8n`;
 					const response = await this.helpers.request({
 						method: 'POST',
 						uri: endpoint,
@@ -116,6 +123,7 @@ export class SymbiosikaChatTrigger implements INodeType {
 							event,
 							name: webhookName,
 							organisationId: credentials.organisationId,
+							organisationWide: this.getNodeParameter('organisationWide'),
 						},
 					});
 
@@ -139,7 +147,7 @@ export class SymbiosikaChatTrigger implements INodeType {
 
 				if (webhookData.webhookId !== undefined) {
 					try {
-						const endpoint = `${credentials.apiUrl}/api/v1/webhooks/${webhookData.webhookId}`;
+						const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/webhooks/${webhookData.webhookId}`;
 						await this.helpers.request({
 							method: 'DELETE',
 							uri: endpoint,
