@@ -37,7 +37,7 @@ export class SymbiosikaChatTrigger implements INodeType {
 		],
 		properties: [
 			{
-				displayName: 'Name to display in Symbiosika',
+				displayName: 'Name To Display In Symbiosika',
 				name: 'webhookName',
 				type: 'string',
 				default: '',
@@ -59,7 +59,7 @@ export class SymbiosikaChatTrigger implements INodeType {
 				required: true,
 			},
 			{
-				displayName: 'Use Organisation-wide?',
+				displayName: 'Use Organisation-Wide?',
 				name: 'organisationWide',
 				type: 'boolean',
 				default: false,
