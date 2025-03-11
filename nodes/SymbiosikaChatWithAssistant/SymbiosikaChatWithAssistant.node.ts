@@ -51,6 +51,12 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 						description: 'Get a list of available assistants',
 						action: 'Get available assistants',
 					},
+					{
+						name: 'Reset Chat',
+						value: 'resetChat',
+						description: 'Reset an existing chat conversation',
+						action: 'Reset a chat conversation',
+					},
 				],
 				default: 'chat',
 			},
@@ -106,20 +112,35 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 				},
 			},
 			{
-				displayName: 'Assistant',
+				displayName: 'Assistant Name or ID',
 				name: 'assistantId',
 				type: 'options',
 				typeOptions: {
 					loadOptionsMethod: 'getAssistants',
 				},
 				default: '',
-				description: 'The assistant template to use',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				displayOptions: {
 					show: {
 						useSpecificAssistant: [true],
 						operation: ['chat'],
 					},
 				},
+			},
+			// Reset Chat Properties
+			{
+				displayName: 'Chat ID',
+				name: 'resetChatId',
+				type: 'string',
+				default: '',
+				description: 'The ID of the chat to reset',
+				displayOptions: {
+					show: {
+						operation: ['resetChat'],
+					},
+				},
+				required: true,
 			},
 		],
 	};
@@ -269,6 +290,64 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 								finished: response.finished,
 								render: response.render,
 								sessionId: items[i].json.sessionId, // Pass through any sessionId
+							},
+						};
+
+						returnData.push(newItem);
+					} else {
+						throw new NodeOperationError(this.getNode(), 'Invalid response from Symbiosika API', {
+							itemIndex: i,
+						});
+					}
+				} catch (error) {
+					if (this.continueOnFail()) {
+						returnData.push({
+							json: {
+								error: error.message,
+							},
+						});
+						continue;
+					}
+					throw error;
+				}
+			}
+		} else if (operation === 'resetChat') {
+			for (let i = 0; i < items.length; i++) {
+				try {
+					const resetChatId = this.getNodeParameter('resetChatId', i, '') as string;
+
+					if (!resetChatId) {
+						throw new NodeOperationError(this.getNode(), 'No chat ID provided for reset', {
+							itemIndex: i,
+						});
+					}
+
+					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/ai/reset-chat`;
+					const requestBody: any = {
+						chatId: resetChatId,
+					};
+
+					const response = await this.helpers.request({
+						method: 'POST',
+						uri: endpoint,
+						json: true,
+						headers: {
+							Authorization: `Bearer ${credentials.apiKey}`,
+							'X-Organisation-ID': credentials.organisationId,
+						},
+						body: requestBody,
+					});
+
+					if (response && response.message && response.message.content) {
+						const resetMessage = response.message.content;
+
+						const newItem: INodeExecutionData = {
+							json: {
+								resetMessage,
+								chatId: resetChatId,
+								finished: response.finished,
+								render: response.render,
+								sessionId: items[i].json.sessionId,
 							},
 						};
 
