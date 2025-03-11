@@ -163,7 +163,7 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 					});
 
 					if (!Array.isArray(response)) {
-						throw new Error('Invalid response format');
+						throw new NodeOperationError(this.getNode(), 'Invalid response format');
 					}
 
 					return response.map((template) => ({
@@ -171,7 +171,7 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 						value: template.id,
 					}));
 				} catch (error) {
-					return [{ name: 'Error loading assistants', value: '' }];
+					return [{ name: 'Error Loading Assistants', value: '' }];
 				}
 			},
 		},
