@@ -18,7 +18,7 @@ const sessionStore: Map<string, ChatSession> = new Map();
 export class SymbiosikaChatSessionStore implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Symbiosika Chat Session Store',
-		name: 'SymbiosikaChatSessionStore',
+		name: 'symbiosikaChatSessionStore',
 		icon: 'file:symbiosika.svg',
 		group: ['transform'],
 		version: 1,

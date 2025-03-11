@@ -1,5 +1,5 @@
 {
-	"node": "n8n-nodes-base.SymbiosikaChatSessionStore",
+	"node": "n8n-nodes-base.symbiosikaChatSessionStore",
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
 	"categories": ["Communication"],

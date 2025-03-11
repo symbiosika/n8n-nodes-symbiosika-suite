@@ -1,5 +1,5 @@
 {
-	"node": "n8n-nodes-base.SymbiosikaChatWithAssistant",
+	"node": "n8n-nodes-base.symbiosikaChatWithAssistant",
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
 	"categories": ["Communication"],

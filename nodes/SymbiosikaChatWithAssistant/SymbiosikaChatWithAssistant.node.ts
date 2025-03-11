@@ -15,7 +15,7 @@ import { NodeOperationError } from 'n8n-workflow';
 export class SymbiosikaChatWithAssistant implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Symbiosika Assistant Chat',
-		name: 'SymbiosikaChatWithAssistant',
+		name: 'symbiosikaChatWithAssistant',
 		icon: 'file:symbiosika.svg',
 		group: ['transform'],
 		version: 1,

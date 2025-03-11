@@ -9,7 +9,7 @@ import { NodeOperationError } from 'n8n-workflow';
 export class SymbiosikaChatHistory implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'Symbiosika Chat History',
-		name: 'SymbiosikaChatHistory',
+		name: 'symbiosikaChatHistory',
 		icon: 'file:symbiosika.svg',
 		group: ['transform'],
 		version: 1,
