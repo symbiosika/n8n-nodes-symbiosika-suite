@@ -1,7 +1,5 @@
 # Docker environment for n8n testing and development
 
-version: "3.7"
-
 # linux:
 # extra_hosts:
 #   - "host.docker.internal:host-gateway"
@@ -9,7 +7,7 @@ version: "3.7"
 services:
   n8n:
     image: docker.n8n.io/n8nio/n8n
-    restart: always
+    # restart: always
     ports:
       - "127.0.0.1:5678:5678"
     environment:

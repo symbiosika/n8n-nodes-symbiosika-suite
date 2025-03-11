@@ -39,7 +39,8 @@
 			"dist/credentials/SymbiosikaChatApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/SymbiosikaChatTrigger/SymbiosikaChatTrigger.node.js"
+			"dist/nodes/SymbiosikaChatTrigger/SymbiosikaChatTrigger.node.js",
+			"dist/nodes/SymbiosikaChatWithAssistant/SymbiosikaChatTrigger.node.js"
 		]
 	},
 	"devDependencies": {
