@@ -3,27 +3,6 @@
   "nodes": [
     {
       "parameters": {
-        "userInput": "={{ $('Telegram Trigger').item.json.message }}",
-        "useExistingChatId": true,
-        "chatId": "={{ $json.valid ? $json.chatId : null }}"
-      },
-      "type": "CUSTOM.SymbiosikaChatWithAssistant",
-      "typeVersion": 1,
-      "position": [
-        420,
-        -220
-      ],
-      "id": "6a5aad5e-a5b5-491c-bfa3-3036245a1a19",
-      "name": "Symbiosika Assistant Chat1",
-      "credentials": {
-        "symbiosikaChatApi": {
-          "id": "BgtG6qua9Oaq8glQ",
-          "name": "Symbiosika Chat account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "updates": [
           "message"
         ],
@@ -38,34 +17,6 @@
       "id": "32ec8ca6-ab41-4677-aa2e-8ea0836ac963",
       "name": "Telegram Trigger",
       "webhookId": "39ba8374-c65b-4b21-bccb-246e9d435f20"
-    },
-    {
-      "parameters": {
-        "operation": "getSession",
-        "sessionId": "={{ $json.userId }}"
-      },
-      "type": "CUSTOM.SymbiosikaChatSessionStore",
-      "typeVersion": 1,
-      "position": [
-        160,
-        -280
-      ],
-      "id": "899d35f2-f675-40aa-bb81-e35145e2258d",
-      "name": "Symbiosika Chat Session Store"
-    },
-    {
-      "parameters": {
-        "sessionId": "={{ $('Symbiosika Chat Session Store').item.json.userId }}",
-        "chatId": "={{ $json.chatId }}"
-      },
-      "type": "CUSTOM.SymbiosikaChatSessionStore",
-      "typeVersion": 1,
-      "position": [
-        660,
-        -280
-      ],
-      "id": "44009f34-f106-4490-88fa-d4ff1bed728d",
-      "name": "Symbiosika Chat Session Store1"
     },
     {
       "parameters": {
@@ -96,21 +47,72 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        380,
-        60
+        160,
+        -60
       ],
       "id": "e4b623d1-562e-485a-9ead-ec563e9a3aa1",
       "name": "If"
     },
     {
-      "parameters": {},
-      "type": "CUSTOM.SymbiosikaChatHistory",
+      "parameters": {
+        "operation": "getSession",
+        "sessionId": "={{ $json.userId }}"
+      },
+      "type": "CUSTOM.symbiosikaChatSessionStore",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -300
+      ],
+      "id": "8846d764-4d23-49ad-997e-df585e5ce5f8",
+      "name": "Symbiosika Chat Session Store2"
+    },
+    {
+      "parameters": {
+        "userInput": "={{ $json.message }}",
+        "useExistingChatId": true,
+        "chatId": "={{ $json.chatId ?? null }}",
+        "useSpecificAssistant": true,
+        "assistantId": "3893ea46-a02c-4f00-b5ac-95c6f8e4a7fb"
+      },
+      "type": "CUSTOM.symbiosikaChatWithAssistant",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -300
+      ],
+      "id": "9505874c-63bd-491a-9eb9-4a970705fbda",
+      "name": "Symbiosika Assistant Chat1",
+      "credentials": {
+        "symbiosikaChatApi": {
+          "id": "BgtG6qua9Oaq8glQ",
+          "name": "Symbiosika Chat account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionId": "={{ $('Symbiosika Chat Session Store2').item.json.userId }}",
+        "chatId": "={{ $json.chatId }}"
+      },
+      "type": "CUSTOM.symbiosikaChatSessionStore",
       "typeVersion": 1,
       "position": [
         640,
-        40
+        -300
       ],
-      "id": "8aea9982-b90b-4803-994e-0beabd72fe48",
+      "id": "bcf729b8-770c-4e0f-a664-8da91efc7f0d",
+      "name": "Symbiosika Chat Session Store"
+    },
+    {
+      "parameters": {},
+      "type": "CUSTOM.symbiosikaChatHistory",
+      "typeVersion": 1,
+      "position": [
+        420,
+        -60
+      ],
+      "id": "2ce91adc-4fc3-4fc4-a63b-2d8e515f8c22",
       "name": "Symbiosika Chat History",
       "credentials": {
         "symbiosikaChatApi": {
@@ -124,8 +126,8 @@
     "Telegram Trigger": [
       {
         "json": {
-          "userId": "ABC",
-          "message": "Sag mal A"
+          "userId": "AABB",
+          "message": "was ist ein messdas forecast?"
         }
       }
     ]
@@ -135,14 +137,25 @@
       "main": [
         [
           {
-            "node": "Symbiosika Chat Session Store",
+            "node": "Symbiosika Chat Session Store2",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Symbiosika Chat Session Store": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Symbiosika Chat History",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Symbiosika Chat Session Store2": {
       "main": [
         [
           {
@@ -162,18 +175,7 @@
       "main": [
         [
           {
-            "node": "Symbiosika Chat Session Store1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "If": {
-      "main": [
-        [
-          {
-            "node": "Symbiosika Chat History",
+            "node": "Symbiosika Chat Session Store",
             "type": "main",
             "index": 0
           }
@@ -185,7 +187,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "7fd69fb3-e4dd-47a0-ba71-7f190cb87cec",
+  "versionId": "8c9f8644-c181-4b1f-b674-d2629c8c0f71",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "07d29a0a7ce6a2dfc531cbc0e336091291d8363b4157f24f99f3ded700490e21"
