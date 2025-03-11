@@ -60,6 +60,25 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 				},
 				required: true,
 			},
+			{
+				displayName: 'Use Existing Chat ID',
+				name: 'useExistingChatId',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to use an existing chat ID for continuing a conversation',
+			},
+			{
+				displayName: 'Chat ID',
+				name: 'chatId',
+				type: 'string',
+				default: '',
+				description: 'The ID of an existing chat to continue',
+				displayOptions: {
+					show: {
+						useExistingChatId: [true],
+					},
+				},
+			},
 		],
 	};
 
@@ -76,15 +95,44 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 
 		for (let i = 0; i < items.length; i++) {
 			try {
-				// Get user input either from parameter or specified field
+				// Get user input
 				let userInput = this.getNodeParameter('userInput', i) as string;
 
 				if (!userInput) {
 					throw new NodeOperationError(this.getNode(), 'No user input provided', { itemIndex: i });
 				}
 
+				// Check if we should use an existing chat ID
+				const useExistingChatId = this.getNodeParameter('useExistingChatId', i, false) as boolean;
+				let existingChatId: string | undefined;
+
+				if (useExistingChatId) {
+					// Get chat ID from parameter or from input
+					existingChatId = this.getNodeParameter('chatId', i, '') as string;
+
+					// If no explicit chatId is provided, check if it's in the input data
+					if (!existingChatId && items[i].json.chatId) {
+						existingChatId = items[i].json.chatId as string;
+					}
+				}
+
 				// Build API request
 				const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/ai/chat-with-template`;
+				const requestBody: any = {
+					userMessage: userInput,
+					variables: {
+						user_input: userInput,
+					},
+					meta: {
+						organisationId: credentials.organisationId,
+					},
+				};
+
+				// Add existing chatId if available
+				if (existingChatId) {
+					requestBody.chatId = existingChatId;
+				}
+
 				const response = await this.helpers.request({
 					method: 'POST',
 					uri: endpoint,
@@ -93,15 +141,7 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 						Authorization: `Bearer ${credentials.apiKey}`,
 						'X-Organisation-ID': credentials.organisationId,
 					},
-					body: {
-						userMessage: userInput,
-						variables: {
-							user_input: userInput,
-						},
-						meta: {
-							organisationId: credentials.organisationId,
-						},
-					},
+					body: requestBody,
 				});
 
 				// Extract message content from response
@@ -115,6 +155,7 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 							chatId: response.chatId,
 							finished: response.finished,
 							render: response.render,
+							sessionId: items[i].json.sessionId, // Pass through any sessionId
 						},
 					};
 
