@@ -42,10 +42,13 @@
 			"dist/nodes/SymbiosikaChatTrigger/SymbiosikaChatTrigger.node.js",
 			"dist/nodes/SymbiosikaChatWithAssistant/SymbiosikaChatWithAssistant.node.js",
 			"dist/nodes/SymbiosikaChatHistory/SymbiosikaChatHistory.node.js",
-			"dist/nodes/SymbiosikaChatSessionStore/SymbiosikaChatSessionStore.node.js"
+			"dist/nodes/SymbiosikaChatSessionStore/SymbiosikaChatSessionStore.node.js",
+			"dist/nodes/SymbiosikaSyncKnowledgeItem/SymbiosikaSyncKnowledgeItem.node.js",
+			"dist/nodes/SymbiosikaKeyValueStore/SymbiosikaKeyValueStore.node.js"
 		]
 	},
 	"devDependencies": {
+		"@types/node": "^22.13.10",
 		"@typescript-eslint/parser": "^7.15.0",
 		"eslint": "^8.56.0",
 		"eslint-plugin-n8n-nodes-base": "^1.16.1",
