@@ -40,13 +40,13 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 						action: 'Sync a knowledge item',
 					},
 					{
-						name: 'Sync Knowledge Entry by Text only',
+						name: 'Sync Knowledge Entry By Text Only',
 						value: 'syncKnowledgeEntryByText',
 						description: 'Sync a knowledge entry by text only',
 						action: 'Sync a knowledge entry by text only',
 					},
 					{
-						name: 'Check Knowledge Item if it should be synced',
+						name: 'Check Knowledge Item If It Should Be Synced',
 						value: 'checkKnowledgeItem',
 						description: 'Check if a knowledge item exists and if it should be synced',
 						action: 'Check if a knowledge item exists and if it should be synced',
@@ -56,11 +56,11 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 			},
 			// Input field for chat
 			{
-				displayName: 'Sync-ID (external)',
+				displayName: 'Sync-ID (External)',
 				name: 'externalId',
 				type: 'string',
 				default: '',
-				description: 'The sync-id of the knowledge item to sync',
+				description: 'The sync-ID of the knowledge item to sync',
 				displayOptions: {
 					show: {
 						operation: ['syncKnowledgeItem', 'checkKnowledgeItem', 'syncKnowledgeEntryByText'],
@@ -69,7 +69,7 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 				required: true,
 			},
 			{
-				displayName: 'Last Change of the item',
+				displayName: 'Last Change Of The Item',
 				name: 'lastChange',
 				type: 'string',
 				default: '',

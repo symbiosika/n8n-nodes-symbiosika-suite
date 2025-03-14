@@ -102,19 +102,9 @@ export class SymbiosikaKeyValueStore implements INodeType {
 				},
 				options: [
 					{
-						name: 'Auto-detect',
+						name: 'Auto-Detect',
 						value: 'auto',
 						description: 'Automatically detect the value type',
-					},
-					{
-						name: 'String',
-						value: 'string',
-						description: 'Store as string',
-					},
-					{
-						name: 'Number',
-						value: 'number',
-						description: 'Store as number',
 					},
 					{
 						name: 'Boolean',
@@ -122,9 +112,19 @@ export class SymbiosikaKeyValueStore implements INodeType {
 						description: 'Store as boolean',
 					},
 					{
+						name: 'Number',
+						value: 'number',
+						description: 'Store as number',
+					},
+					{
 						name: 'Object (JSON)',
 						value: 'object',
 						description: 'Store as JSON object',
+					},
+					{
+						name: 'String',
+						value: 'string',
+						description: 'Store as string',
 					},
 				],
 			},
