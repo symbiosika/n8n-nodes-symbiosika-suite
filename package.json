@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-symbiosika-suite",
-	"version": "0.2.1",
+	"version": "0.3.2",
 	"description": "n8n nodes for the symbiosika suite",
 	"keywords": [
 		"n8n-community-node-package"
@@ -39,7 +39,10 @@
 			"dist/credentials/SymbiosikaChatApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/SymbiosikaChatTrigger/SymbiosikaChatTrigger.node.js"
+			"dist/nodes/SymbiosikaChatTrigger/SymbiosikaChatTrigger.node.js",
+			"dist/nodes/SymbiosikaChatWithAssistant/SymbiosikaChatWithAssistant.node.js",
+			"dist/nodes/SymbiosikaChatHistory/SymbiosikaChatHistory.node.js",
+			"dist/nodes/SymbiosikaChatSessionStore/SymbiosikaChatSessionStore.node.js"
 		]
 	},
 	"devDependencies": {
