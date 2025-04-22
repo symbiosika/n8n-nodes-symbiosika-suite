@@ -40,14 +40,15 @@ export class SymbiosikaChatTrigger implements INodeType {
 		properties: [
 			// Organisation Selection
 			{
-				displayName: 'Organisation',
+				displayName: 'Organisation Name or ID',
 				name: 'organisationId',
 				type: 'options',
 				typeOptions: {
 					loadOptionsMethod: 'getOrganisations',
 				},
 				default: '',
-				description: 'The organisation to use',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				required: true,
 			},
 			{
