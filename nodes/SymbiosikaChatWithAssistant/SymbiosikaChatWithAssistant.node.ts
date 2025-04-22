@@ -198,7 +198,7 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 				const organisationId = this.getCurrentNodeParameter('organisationId') as string;
 
 				if (!organisationId) {
-					return [{ name: 'Please select an organisation first', value: '' }];
+					return [{ name: 'Please Select an Organization First', value: '' }];
 				}
 
 				const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/ai/templates`;

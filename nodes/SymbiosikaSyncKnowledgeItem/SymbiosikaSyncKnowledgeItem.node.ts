@@ -84,7 +84,7 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 				required: true,
 			},
 			{
-				displayName: 'Last Change Of The Item',
+				displayName: 'Last Change of the Item',
 				name: 'lastChange',
 				type: 'string',
 				default: '',
