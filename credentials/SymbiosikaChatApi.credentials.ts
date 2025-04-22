@@ -43,8 +43,7 @@ export class SymbiosikaChatApi implements ICredentialType {
 		type: 'generic',
 		properties: {
 			headers: {
-				Authorization: '=Bearer {{$credentials.apiKey}}',
-				'X-Organisation-ID': '={{$credentials.organisationId}}',
+				'X-API-KEY': '={{$credentials.apiKey}}',
 			},
 		},
 	};
