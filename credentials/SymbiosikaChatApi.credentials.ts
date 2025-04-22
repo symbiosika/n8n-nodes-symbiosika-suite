@@ -20,14 +20,6 @@ export class SymbiosikaChatApi implements ICredentialType {
 			required: true,
 		},
 		{
-			displayName: 'Organisation ID',
-			name: 'organisationId',
-			type: 'string',
-			default: '',
-			required: true,
-			description: 'The ID of your organisation',
-		},
-		{
 			displayName: 'API Key',
 			name: 'apiKey',
 			type: 'string',

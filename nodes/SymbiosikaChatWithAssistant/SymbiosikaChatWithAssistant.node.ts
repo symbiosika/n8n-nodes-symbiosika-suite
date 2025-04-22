@@ -32,6 +32,18 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 			},
 		],
 		properties: [
+			// Organisation Selection
+			{
+				displayName: 'Organisation',
+				name: 'organisationId',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getOrganisations',
+				},
+				default: '',
+				description: 'The organisation to use',
+				required: true,
+			},
 			// Chat Properties
 			{
 				displayName: 'Operation',
@@ -147,9 +159,48 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 
 	methods = {
 		loadOptions: {
+			async getOrganisations(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const credentials = await this.getCredentials('symbiosikaChatApi');
+				const endpoint = `${credentials.apiUrl}/api/v1/user/organisations`;
+
+				try {
+					const response = await this.helpers.request({
+						method: 'GET',
+						uri: endpoint,
+						json: true,
+						headers: {
+							'X-API-KEY': credentials.apiKey,
+						},
+					});
+
+					if (!Array.isArray(response)) {
+						throw new NodeOperationError(
+							this.getNode(),
+							'Invalid response format for organisations',
+						);
+					}
+
+					return response.map((org) => ({
+						name: `${org.name} (${org.role})`,
+						value: org.organisationId,
+					}));
+				} catch (error) {
+					throw new NodeOperationError(
+						this.getNode(),
+						`Failed to load organisations: ${error.message}`,
+					);
+				}
+			},
+
 			async getAssistants(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 				const credentials = await this.getCredentials('symbiosikaChatApi');
-				const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/ai/templates`;
+				const organisationId = this.getCurrentNodeParameter('organisationId') as string;
+
+				if (!organisationId) {
+					return [{ name: 'Please select an organisation first', value: '' }];
+				}
+
+				const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/ai/templates`;
 
 				try {
 					const response = await this.helpers.request({
@@ -181,11 +232,12 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 		const returnData: INodeExecutionData[] = [];
 		const operation = this.getNodeParameter('operation', 0) as string;
 		const credentials = await this.getCredentials('symbiosikaChatApi');
+		const organisationId = this.getNodeParameter('organisationId', 0) as string;
 
 		if (operation === 'getAssistants') {
 			// Get available assistants
 			try {
-				const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/ai/templates`;
+				const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/ai/templates`;
 
 				const response = await this.helpers.request({
 					method: 'GET',
@@ -234,14 +286,14 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 					}
 
 					// Build API request
-					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/ai/chat-with-template`;
+					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/ai/chat-with-template`;
 					const requestBody: any = {
 						userMessage: userInput,
 						variables: {
 							user_input: userInput,
 						},
 						meta: {
-							organisationId: credentials.organisationId,
+							organisationId: organisationId,
 						},
 					};
 
@@ -319,7 +371,7 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 						});
 					}
 
-					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/ai/reset-chat`;
+					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/ai/reset-chat`;
 					const requestBody: any = {
 						chatId: resetChatId,
 					};

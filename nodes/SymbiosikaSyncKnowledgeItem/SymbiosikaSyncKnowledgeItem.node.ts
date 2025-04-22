@@ -3,6 +3,8 @@ import type {
 	INodeType,
 	INodeTypeDescription,
 	INodeExecutionData,
+	ILoadOptionsFunctions,
+	INodePropertyOptions,
 } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
 
@@ -26,6 +28,18 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 			},
 		],
 		properties: [
+			// Organisation Selection
+			{
+				displayName: 'Organisation',
+				name: 'organisationId',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getOrganisations',
+				},
+				default: '',
+				description: 'The organisation to use',
+				required: true,
+			},
 			// Chat Properties
 			{
 				displayName: 'Operation',
@@ -122,11 +136,49 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 		],
 	};
 
+	methods = {
+		loadOptions: {
+			async getOrganisations(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const credentials = await this.getCredentials('symbiosikaChatApi');
+				const endpoint = `${credentials.apiUrl}/api/v1/user/organisations`;
+
+				try {
+					const response = await this.helpers.request({
+						method: 'GET',
+						uri: endpoint,
+						json: true,
+						headers: {
+							'X-API-KEY': credentials.apiKey,
+						},
+					});
+
+					if (!Array.isArray(response)) {
+						throw new NodeOperationError(
+							this.getNode(),
+							'Invalid response format for organisations',
+						);
+					}
+
+					return response.map((org) => ({
+						name: `${org.name} (${org.role})`,
+						value: org.organisationId,
+					}));
+				} catch (error) {
+					throw new NodeOperationError(
+						this.getNode(),
+						`Failed to load organisations: ${error.message}`,
+					);
+				}
+			},
+		},
+	};
+
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 		const operation = this.getNodeParameter('operation', 0) as string;
 		const credentials = await this.getCredentials('symbiosikaChatApi');
+		const organisationId = this.getNodeParameter('organisationId', 0) as string;
 
 		if (operation === 'checkKnowledgeItem') {
 			// Check if knowledge item needs to be synced
@@ -135,7 +187,7 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 					const externalId = this.getNodeParameter('externalId', i) as string;
 					const lastChange = this.getNodeParameter('lastChange', i) as string | undefined;
 
-					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/ai/knowledge/sync/check`;
+					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/ai/knowledge/sync/check`;
 
 					const response = await this.helpers.request({
 						method: 'POST',
@@ -173,7 +225,7 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 					const lastChange = this.getNodeParameter('lastChange', i) as string;
 					const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
 
-					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/ai/knowledge/sync/upload`;
+					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/ai/knowledge/sync/upload`;
 
 					// else try to use binary input
 					let binaryData;
@@ -234,7 +286,7 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 					const knowledgeText = this.getNodeParameter('knowledgeText', i) as string;
 					const knowledgeTitle = this.getNodeParameter('knowledgeTitle', i) as string;
 
-					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/ai/knowledge/sync/upload`;
+					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/ai/knowledge/sync/upload`;
 
 					const body = {
 						text: knowledgeText,

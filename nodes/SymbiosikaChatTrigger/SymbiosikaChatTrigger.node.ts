@@ -5,6 +5,8 @@ import type {
 	INodeType,
 	INodeTypeDescription,
 	IWebhookResponseData,
+	ILoadOptionsFunctions,
+	INodePropertyOptions,
 } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
 
@@ -36,6 +38,18 @@ export class SymbiosikaChatTrigger implements INodeType {
 			},
 		],
 		properties: [
+			// Organisation Selection
+			{
+				displayName: 'Organisation',
+				name: 'organisationId',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getOrganisations',
+				},
+				default: '',
+				description: 'The organisation to use',
+				required: true,
+			},
 			{
 				displayName: 'Name To Display In Symbiosika',
 				name: 'webhookName',
@@ -68,6 +82,43 @@ export class SymbiosikaChatTrigger implements INodeType {
 		],
 	};
 
+	methods = {
+		loadOptions: {
+			async getOrganisations(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const credentials = await this.getCredentials('symbiosikaChatApi');
+				const endpoint = `${credentials.apiUrl}/api/v1/user/organisations`;
+
+				try {
+					const response = await this.helpers.request({
+						method: 'GET',
+						uri: endpoint,
+						json: true,
+						headers: {
+							'X-API-KEY': credentials.apiKey,
+						},
+					});
+
+					if (!Array.isArray(response)) {
+						throw new NodeOperationError(
+							this.getNode(),
+							'Invalid response format for organisations',
+						);
+					}
+
+					return response.map((org) => ({
+						name: `${org.name} (${org.role})`,
+						value: org.organisationId,
+					}));
+				} catch (error) {
+					throw new NodeOperationError(
+						this.getNode(),
+						`Failed to load organisations: ${error.message}`,
+					);
+				}
+			},
+		},
+	};
+
 	// @ts-ignore
 	webhookMethods = {
 		default: {
@@ -76,9 +127,10 @@ export class SymbiosikaChatTrigger implements INodeType {
 				const webhookData = this.getWorkflowStaticData('node');
 				const event = this.getNodeParameter('event') as string[];
 				const credentials = await this.getCredentials('symbiosikaChatApi');
+				const organisationId = this.getNodeParameter('organisationId') as string;
 
 				try {
-					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/webhooks/check`;
+					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/webhooks/check`;
 					const response = await this.helpers.request({
 						method: 'POST',
 						uri: endpoint,
@@ -90,7 +142,7 @@ export class SymbiosikaChatTrigger implements INodeType {
 							webhookUrl,
 							event,
 							webhookId: webhookData.webhookId,
-							organisationId: credentials.organisationId,
+							organisationId,
 						},
 					});
 
@@ -106,9 +158,10 @@ export class SymbiosikaChatTrigger implements INodeType {
 				const event = this.getNodeParameter('event') as string[];
 				const webhookName = this.getNodeParameter('webhookName') as string;
 				const credentials = await this.getCredentials('symbiosikaChatApi');
+				const organisationId = this.getNodeParameter('organisationId') as string;
 
 				try {
-					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/webhooks/register/n8n`;
+					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/webhooks/register/n8n`;
 					const response = await this.helpers.request({
 						method: 'POST',
 						uri: endpoint,
@@ -120,7 +173,7 @@ export class SymbiosikaChatTrigger implements INodeType {
 							webhookUrl,
 							event,
 							name: webhookName,
-							organisationId: credentials.organisationId,
+							organisationId,
 							organisationWide: this.getNodeParameter('organisationWide'),
 						},
 					});
@@ -142,10 +195,11 @@ export class SymbiosikaChatTrigger implements INodeType {
 			async delete(this: IHookFunctions): Promise<boolean> {
 				const webhookData = this.getWorkflowStaticData('node');
 				const credentials = await this.getCredentials('symbiosikaChatApi');
+				const organisationId = this.getNodeParameter('organisationId') as string;
 
 				if (webhookData.webhookId !== undefined) {
 					try {
-						const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/webhooks/${webhookData.webhookId}`;
+						const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/webhooks/${webhookData.webhookId}`;
 						await this.helpers.request({
 							method: 'DELETE',
 							uri: endpoint,

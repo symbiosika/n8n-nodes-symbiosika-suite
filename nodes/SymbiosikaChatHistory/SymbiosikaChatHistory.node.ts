@@ -3,6 +3,8 @@ import type {
 	INodeType,
 	INodeTypeDescription,
 	INodeExecutionData,
+	ILoadOptionsFunctions,
+	INodePropertyOptions,
 } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
 
@@ -26,6 +28,18 @@ export class SymbiosikaChatHistory implements INodeType {
 			},
 		],
 		properties: [
+			// Organisation Selection
+			{
+				displayName: 'Organisation',
+				name: 'organisationId',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getOrganisations',
+				},
+				default: '',
+				description: 'The organisation to use',
+				required: true,
+			},
 			{
 				displayName: 'Chat ID Source',
 				name: 'chatIdSource',
@@ -73,10 +87,48 @@ export class SymbiosikaChatHistory implements INodeType {
 		],
 	};
 
+	methods = {
+		loadOptions: {
+			async getOrganisations(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const credentials = await this.getCredentials('symbiosikaChatApi');
+				const endpoint = `${credentials.apiUrl}/api/v1/user/organisations`;
+
+				try {
+					const response = await this.helpers.request({
+						method: 'GET',
+						uri: endpoint,
+						json: true,
+						headers: {
+							'X-API-KEY': credentials.apiKey,
+						},
+					});
+
+					if (!Array.isArray(response)) {
+						throw new NodeOperationError(
+							this.getNode(),
+							'Invalid response format for organisations',
+						);
+					}
+
+					return response.map((org) => ({
+						name: `${org.name} (${org.role})`,
+						value: org.organisationId,
+					}));
+				} catch (error) {
+					throw new NodeOperationError(
+						this.getNode(),
+						`Failed to load organisations: ${error.message}`,
+					);
+				}
+			},
+		},
+	};
+
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
 		const credentials = await this.getCredentials('symbiosikaChatApi');
+		const organisationId = this.getNodeParameter('organisationId', 0) as string;
 
 		for (let i = 0; i < items.length; i++) {
 			try {
@@ -96,7 +148,7 @@ export class SymbiosikaChatHistory implements INodeType {
 				}
 
 				// Build API request to get chat history
-				const endpoint = `${credentials.apiUrl}/api/v1/organisation/${credentials.organisationId}/ai/chat/history/${chatId}`;
+				const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/ai/chat/history/${chatId}`;
 
 				const response = await this.helpers.request({
 					method: 'GET',
