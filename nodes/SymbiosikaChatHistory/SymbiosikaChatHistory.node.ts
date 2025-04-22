@@ -103,8 +103,7 @@ export class SymbiosikaChatHistory implements INodeType {
 					uri: endpoint,
 					json: true,
 					headers: {
-						Authorization: `Bearer ${credentials.apiKey}`,
-						'X-Organisation-ID': credentials.organisationId,
+						'X-API-KEY': credentials.apiKey,
 					},
 				});
 

@@ -142,7 +142,7 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 						uri: endpoint,
 						json: true,
 						headers: {
-							Authorization: `Bearer ${credentials.apiKey}`,
+							'X-API-KEY': credentials.apiKey,
 						},
 						body: {
 							externalId,
@@ -206,7 +206,7 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 						formData,
 						json: true,
 						headers: {
-							Authorization: `Bearer ${credentials.apiKey}`,
+							'X-API-KEY': credentials.apiKey,
 						},
 					});
 
@@ -249,7 +249,7 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 						body,
 						json: true,
 						headers: {
-							Authorization: `Bearer ${credentials.apiKey}`,
+							'X-API-KEY': credentials.apiKey,
 						},
 					});
 
