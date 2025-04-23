@@ -340,6 +340,7 @@ export class SymbiosikaChatWithAssistant implements INodeType {
 								finished: response.finished,
 								render: response.render,
 								sessionId: items[i].json.sessionId, // Pass through any sessionId
+								meta: response.meta,
 							},
 						};
 
