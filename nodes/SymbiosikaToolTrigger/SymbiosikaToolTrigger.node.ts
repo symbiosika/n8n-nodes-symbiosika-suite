@@ -103,16 +103,44 @@ export class SymbiosikaToolTrigger implements INodeType {
 										value: 'number',
 									},
 									{
+										name: 'Integer',
+										value: 'integer',
+									},
+									{
 										name: 'Boolean',
 										value: 'boolean',
 									},
 									{
-										name: 'JSON',
-										value: 'any',
+										name: 'Array',
+										value: 'array',
+									},
+									{
+										name: 'Object',
+										value: 'object',
+									},
+									{
+										name: 'Null',
+										value: 'null',
+									},
+									{
+										name: 'Date',
+										value: 'date',
+									},
+									{
+										name: 'RegExp',
+										value: 'regexp',
+									},
+									{
+										name: 'Function',
+										value: 'function',
+									},
+									{
+										name: 'Undefined',
+										value: 'undefined',
 									},
 								],
 								default: 'string',
-								description: 'Type of the parameter',
+								description: 'Type of the parameter (JSON7 compatible)',
 								required: true,
 							},
 							{
