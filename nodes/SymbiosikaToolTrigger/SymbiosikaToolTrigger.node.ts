@@ -33,7 +33,7 @@ export class SymbiosikaToolTrigger implements INodeType {
 			{
 				name: 'default',
 				httpMethod: 'POST',
-				responseMode: 'onReceived',
+				responseMode: 'lastNode',
 				path: 'webhook',
 			},
 		],
@@ -260,6 +260,7 @@ export class SymbiosikaToolTrigger implements INodeType {
 							webhookUrl,
 							name: toolName,
 							meta: {
+								name: toolName,
 								description: toolDescription,
 								parameters,
 							},
@@ -308,7 +309,12 @@ export class SymbiosikaToolTrigger implements INodeType {
 
 	async webhook(this: IWebhookFunctions): Promise<IWebhookResponseData> {
 		const bodyData = this.getBodyData() as IDataObject;
+		const workflowData = this.getWorkflowStaticData('global');
 
+		// Store the webhook data for the response node
+		workflowData.symbiosikaWebhookData = bodyData;
+
+		// Return the data to the workflow
 		return {
 			workflowData: [this.helpers.returnJsonArray(bodyData)],
 		};

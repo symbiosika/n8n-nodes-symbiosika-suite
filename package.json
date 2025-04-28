@@ -45,7 +45,8 @@
 			"dist/nodes/SymbiosikaChatSessionStore/SymbiosikaChatSessionStore.node.js",
 			"dist/nodes/SymbiosikaSyncKnowledgeItem/SymbiosikaSyncKnowledgeItem.node.js",
 			"dist/nodes/SymbiosikaKeyValueStore/SymbiosikaKeyValueStore.node.js",
-			"dist/nodes/SymbiosikaToolTrigger/SymbiosikaToolTrigger.node.js"
+			"dist/nodes/SymbiosikaToolTrigger/SymbiosikaToolTrigger.node.js",
+			"dist/nodes/SymbiosikaWebhookResponse/SymbiosikaWebhookResponse.node.js"
 		]
 	},
 	"devDependencies": {
