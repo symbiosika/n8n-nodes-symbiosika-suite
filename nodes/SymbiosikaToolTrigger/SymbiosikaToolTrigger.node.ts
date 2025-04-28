@@ -95,44 +95,44 @@ export class SymbiosikaToolTrigger implements INodeType {
 								type: 'options',
 								options: [
 									{
-										name: 'String',
-										value: 'string',
-									},
-									{
-										name: 'Number',
-										value: 'number',
-									},
-									{
-										name: 'Integer',
-										value: 'integer',
+										name: 'Array',
+										value: 'array',
 									},
 									{
 										name: 'Boolean',
 										value: 'boolean',
 									},
 									{
-										name: 'Array',
-										value: 'array',
+										name: 'Date',
+										value: 'date',
 									},
 									{
-										name: 'Object',
-										value: 'object',
+										name: 'Function',
+										value: 'function',
+									},
+									{
+										name: 'Integer',
+										value: 'integer',
 									},
 									{
 										name: 'Null',
 										value: 'null',
 									},
 									{
-										name: 'Date',
-										value: 'date',
+										name: 'Number',
+										value: 'number',
+									},
+									{
+										name: 'Object',
+										value: 'object',
 									},
 									{
 										name: 'RegExp',
 										value: 'regexp',
 									},
 									{
-										name: 'Function',
-										value: 'function',
+										name: 'String',
+										value: 'string',
 									},
 									{
 										name: 'Undefined',
@@ -320,3 +320,4 @@ export class SymbiosikaToolTrigger implements INodeType {
 		};
 	}
 }
+
