@@ -134,6 +134,22 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 				},
 				required: true,
 			},
+			{
+				displayName: 'Knowledge Group Name or ID',
+				name: 'knowledgeGroupId',
+				type: 'options',
+				typeOptions: {
+					loadOptionsMethod: 'getKnowledgeGroups',
+				},
+				default: '',
+				description:
+					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				displayOptions: {
+					show: {
+						operation: ['syncKnowledgeItem', 'checkKnowledgeItem', 'syncKnowledgeEntryByText'],
+					},
+				},
+			},
 		],
 	};
 
@@ -171,6 +187,40 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 					);
 				}
 			},
+			async getKnowledgeGroups(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+				const credentials = await this.getCredentials('symbiosikaChatApi');
+				const organisationId = this.getNodeParameter('organisationId', 0) as string;
+				const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/ai/knowledge/groups`;
+
+				try {
+					const response = await this.helpers.request({
+						method: 'GET',
+						uri: endpoint,
+						json: true,
+						headers: {
+							'Content-Type': 'application/json',
+							'X-API-KEY': credentials.apiKey,
+						},
+					});
+
+					if (!Array.isArray(response)) {
+						throw new NodeOperationError(
+							this.getNode(),
+							'Invalid response format for knowledge groups',
+						);
+					}
+
+					return response.map((group) => ({
+						name: group.name,
+						value: group.id,
+					}));
+				} catch (error) {
+					throw new NodeOperationError(
+						this.getNode(),
+						`Failed to load knowledge groups: ${error.message}`,
+					);
+				}
+			},
 		},
 	};
 
@@ -187,6 +237,9 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 				try {
 					const externalId = this.getNodeParameter('externalId', i) as string;
 					const lastChange = this.getNodeParameter('lastChange', i) as string | undefined;
+					const knowledgeGroupId = this.getNodeParameter('knowledgeGroupId', i, false) as
+						| string
+						| undefined;
 
 					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/ai/knowledge/sync/check`;
 
@@ -200,6 +253,7 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 						body: {
 							externalId,
 							lastChange,
+							...(knowledgeGroupId ? { knowledgeGroupId } : {}),
 						},
 					});
 
@@ -225,6 +279,9 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 					const externalId = this.getNodeParameter('externalId', i) as string;
 					const lastChange = this.getNodeParameter('lastChange', i) as string;
 					const binaryPropertyName = this.getNodeParameter('binaryPropertyName', i) as string;
+					const knowledgeGroupId = this.getNodeParameter('knowledgeGroupId', i, false) as
+						| string
+						| undefined;
 
 					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/ai/knowledge/sync/upload`;
 
@@ -251,6 +308,7 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 						},
 						externalId,
 						lastChange,
+						...(knowledgeGroupId ? { knowledgeGroupId: String(knowledgeGroupId) } : {}),
 					};
 
 					const response = await this.helpers.request({
@@ -259,6 +317,7 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 						formData,
 						json: true,
 						headers: {
+							'Content-Type': 'multipart/form-data',
 							'X-API-KEY': credentials.apiKey,
 						},
 					});
@@ -286,6 +345,9 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 					const lastChange = this.getNodeParameter('lastChange', i) as string;
 					const knowledgeText = this.getNodeParameter('knowledgeText', i) as string;
 					const knowledgeTitle = this.getNodeParameter('knowledgeTitle', i) as string;
+					const knowledgeGroupId = this.getNodeParameter('knowledgeGroupId', i, false) as
+						| string
+						| undefined;
 
 					const endpoint = `${credentials.apiUrl}/api/v1/organisation/${organisationId}/ai/knowledge/sync/upload`;
 
@@ -294,6 +356,7 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 						title: knowledgeTitle,
 						externalId,
 						lastChange,
+						...(knowledgeGroupId ? { knowledgeGroupId } : {}),
 					};
 
 					const response = await this.helpers.request({
@@ -302,6 +365,7 @@ export class SymbiosikaSyncKnowledgeItem implements INodeType {
 						body,
 						json: true,
 						headers: {
+							'Content-Type': 'application/json',
 							'X-API-KEY': credentials.apiKey,
 						},
 					});
